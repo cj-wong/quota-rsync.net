@@ -1,12 +1,13 @@
-import datetime
 import re
 import sqlite3
 import subprocess
 import sys
 
+import pendulum
+
 
 NONALPHANUM = re.compile(r'[^a-z0-9]', re.IGNORECASE)
-NOW = str(datetime.datetime.now())
+NOW = pendulum.now().to_rfc3339_string()
 
 
 def sanitize(thing: str) -> str:
