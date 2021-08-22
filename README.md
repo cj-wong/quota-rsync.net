@@ -15,6 +15,7 @@ Usernames are optional, but if one isn't supplied, the config must contain a use
 This code is designed around the following:
 
 - Python 3.7+
+    - `pendulum`
 
 ## Setup
 
