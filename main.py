@@ -8,6 +8,10 @@ import pendulum
 
 NONALPHANUM = re.compile(r'[^a-z0-9]', re.IGNORECASE)
 NOW = pendulum.now().to_rfc3339_string()
+DB_INIT = """
+CREATE TABLE IF NOT EXISTS QUOTA (
+    DATE TEXT UNIQUE, FS TEXT, USAGE REAL, SOFT_QUOTA REAL,
+    HARD_QUOTA REAL, FILES INTEGER)"""
 
 
 def sanitize(thing: str) -> str:
@@ -35,7 +39,7 @@ def retrieve_and_store_quota(user: str = None) -> None:
         user (Optional[str]): user if provided
 
     Raises:
-        subprocess.CalledProcessError: the command did not successfully run    
+        subprocess.CalledProcessError: the command did not successfully run
 
     """
     if not user:
@@ -52,17 +56,13 @@ def retrieve_and_store_quota(user: str = None) -> None:
 
     db = sqlite3.connect(f'db/{file}.db')
     cursor = db.cursor()
+    cursor.execute(DB_INIT)
 
     for row in rows:
         if not row:
             continue
 
         fs, usage, soft_quota, hard_quota, files, *_ = row.split()
-        cursor.execute(
-            """CREATE TABLE IF NOT EXISTS QUOTA (
-                DATE TEXT UNIQUE, FS TEXT, USAGE REAL, SOFT_QUOTA REAL,
-                HARD_QUOTA REAL, FILES INTEGER)"""
-            )
         cursor.execute(
             'INSERT INTO QUOTA VALUES (?, ?, ?, ?, ?, ?)',
             (NOW, fs, usage, soft_quota, hard_quota, files)
