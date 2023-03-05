@@ -1,0 +1,6 @@
+[Unit]
+Description=rsync.net quota to database
+
+[Service]
+ExecStart=/usr/bin/env bash main.bash
+WorkingDirectory=$PATH_TO_THIS_REPO
