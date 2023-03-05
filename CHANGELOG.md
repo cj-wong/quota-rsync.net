@@ -3,6 +3,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.2.3] - 2023-03-05
+### Added
+- Added `bootstrap.bash` for bootstrapping setup. It installs the virtual environment and places the new `systemd` service files into the `user` `systemd` location.
+- Added `systemd` service and timer for automatic execution. Timer is currently set for 15 minutes. The service executes the new `main.bash` script, a wrapper around the virtual environment and `main.py`.
+
 ## [0.2.2] - 2022-12-11
 ### Security
 - Bumped `certifi` to latest version.
