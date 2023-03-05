@@ -2,6 +2,7 @@ import re
 import sqlite3
 import subprocess
 import sys
+from typing import Optional
 
 import pendulum
 
@@ -29,7 +30,7 @@ def sanitize(thing: str) -> str:
     return NONALPHANUM.sub('', thing)
 
 
-def retrieve_and_store_quota(user: str = None) -> None:
+def retrieve_and_store_quota(user: Optional[str] = None) -> None:
     """Run the quota command and retrieve stdout.
 
     The quota data will be stored under db/, in a sqlite3 database with the
