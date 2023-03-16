@@ -15,12 +15,15 @@ CREATE TABLE IF NOT EXISTS QUOTA (
     DATE TEXT UNIQUE, FS TEXT, USAGE REAL, SOFT_QUOTA REAL,
     HARD_QUOTA REAL, FILES INTEGER)"""
 DEFAULT_PARENT = Path('db')
+COMMAND_ERROR = """The command failed. Most likely SSH is not configured.
+If ssh is installed, does your config have rsync.net?
+User: {0}"""
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
     '-d', '--directory', default=DEFAULT_PARENT, type=Path,
     help="optional parent directory", required=False)
-parser.add_argument('users', nargs='*')
+parser.add_argument('users', nargs='*', default=[None])
 
 
 def sanitize(thing: str) -> str:
@@ -93,17 +96,15 @@ def main() -> None:
 
     """
     args = parser.parse_args()
-    try:
-        if not args.users:
-            retrieve_and_store_quota(args.directory)
-        else:
-            for user in args.users:
-                retrieve_and_store_quota(args.directory, user=user)
-    except subprocess.CalledProcessError as e:
-        raise RuntimeError(
-            """The command failed. Most likely SSH is not configured.
-            If ssh is installed, does your config have rsync.net?"""
-            ) from e
+    for user in args.users:
+        try:
+            retrieve_and_store_quota(args.directory, user=user)
+        except subprocess.CalledProcessError as e:
+            if not user:
+                user = "No user provided"
+            raise RuntimeError(
+                COMMAND_ERROR.format(user)
+                ) from e
 
 
 if __name__ == '__main__':
