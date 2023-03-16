@@ -1,7 +1,8 @@
+import argparse
 import re
 import sqlite3
 import subprocess
-import sys
+from pathlib import Path
 from typing import Optional
 
 import pendulum
@@ -13,6 +14,13 @@ DB_INIT = """
 CREATE TABLE IF NOT EXISTS QUOTA (
     DATE TEXT UNIQUE, FS TEXT, USAGE REAL, SOFT_QUOTA REAL,
     HARD_QUOTA REAL, FILES INTEGER)"""
+DEFAULT_PARENT = Path('db')
+
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    '-d', '--directory', default=DEFAULT_PARENT, type=Path,
+    help="optional parent directory", required=False)
+parser.add_argument('users', nargs='*')
 
 
 def sanitize(thing: str) -> str:
@@ -30,7 +38,8 @@ def sanitize(thing: str) -> str:
     return NONALPHANUM.sub('', thing)
 
 
-def retrieve_and_store_quota(user: Optional[str] = None) -> None:
+def retrieve_and_store_quota(
+        parent_dir: Path, *, user: Optional[str] = None) -> None:
     """Run the quota command and retrieve stdout.
 
     The quota data will be stored under db/, in a sqlite3 database with the
@@ -55,7 +64,7 @@ def retrieve_and_store_quota(user: Optional[str] = None) -> None:
     title, header, *rows, note = output.strip().split('\n')
     file = sanitize(user or title.split()[-1])
 
-    db = sqlite3.connect(f'db/{file}.db')
+    db = sqlite3.connect(parent_dir / f'{file}.db')
     cursor = db.cursor()
     cursor.execute(DB_INIT)
 
@@ -83,12 +92,13 @@ def main() -> None:
             c. ssh attempt was unauthorized
 
     """
+    args = parser.parse_args()
     try:
-        if not sys.argv[1:]:
-            retrieve_and_store_quota()
+        if not args.users:
+            retrieve_and_store_quota(args.directory)
         else:
-            for user in sys.argv[1:]:
-                retrieve_and_store_quota(user)
+            for user in args.users:
+                retrieve_and_store_quota(args.directory, user=user)
     except subprocess.CalledProcessError as e:
         raise RuntimeError(
             """The command failed. Most likely SSH is not configured.
