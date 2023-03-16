@@ -3,6 +3,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.2.4] - 2023-03-16
+### Changed
+- In `main.py`, changed argument parsing from `sys.argv` to `argparse`.
+    - Added an optional parameter for changing the default parent directory.
+    - Using `argparse` defaults, removed an unnecessary check for the `users` argument.
+
+### Fixed
+- Fixed incorrect test check in `main.bash`.
+
 ## [0.2.3] - 2023-03-05
 ### Added
 - Added `bootstrap.bash` for bootstrapping setup. It installs the virtual environment and places the new `systemd` service files into the `user` `systemd` location.
