@@ -1,4 +1,5 @@
 import argparse
+import json
 import re
 import sqlite3
 import subprocess
@@ -18,6 +19,19 @@ DEFAULT_PARENT = Path('db')
 COMMAND_ERROR = """The command failed. Most likely SSH is not configured.
 If ssh is installed, does your config have rsync.net?
 User: {0}"""
+CONFIG_ERROR = """A configuration file exists but {0}.
+Compare your configuration with config.json.example for a valid example."""
+
+config_file = Path('config.json')
+if config_file.exists():
+    with config_file.open() as f:
+        try:
+            config = json.load(f)
+            DEFAULT_PARENT = Path(config['db_dir'])
+        except (json.decoder.JSONDecodeError, TypeError):
+            raise RuntimeError(CONFIG_ERROR.format("it is invalid JSON"))
+        except KeyError:
+            raise RuntimeError(CONFIG_ERROR.format("db_dir was not defined"))
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
