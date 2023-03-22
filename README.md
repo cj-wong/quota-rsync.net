@@ -2,20 +2,33 @@
 
 ## Overview
 
-This project logs quotas from your [rsync.net] account to sqlite3. The quotas are obtained through the remote command `quota`, usually executed like: `ssh rsync.net quota`.
+This project logs quotas from your [rsync.net] account to `sqlite3`. The quotas are obtained through the remote command `quota`, usually executed like: `ssh rsync.net quota`.
 
 ## Usage
 
-`python main.py [user_1 ...]`
+```
+usage: main.py [-h] [-d DIRECTORY] [users ...]
+
+positional arguments:
+  users
+
+options:
+  -h, --help            show this help message and exit
+  -d DIRECTORY, --directory DIRECTORY
+                        optional parent directory
+```
 
 Usernames are optional, but if one isn't supplied, the config must contain a username. See [Setup](#setup) below.
 
+A configuration file can be provided as well. For an example, look at `config.json.example`. Note that even if a configuration file exists, its contents will be overridden by command line provided arguments. Specifically, if the user supplies options while executing the command, anything equivalent in `config.json` will be ignored.
+
 ## Requirements
 
-This code is designed around the following:
+This code was tested with the following:
 
-- Python 3.7+
+- Python 3.10+
     - `pendulum`
+- OpenSSH for calling a remote command
 
 ## Setup
 
