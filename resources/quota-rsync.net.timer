@@ -2,6 +2,8 @@
 Description=rsync.net quota to database
 
 [Timer]
+OnActiveSec=2min
+OnBootSec=2min
 OnUnitActiveSec=15min
 Persistent=true
 
