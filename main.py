@@ -89,13 +89,19 @@ def main() -> None:
     """Run code to check quota of rsync.net account.
 
     Raises:
-        RuntimeError: the command did not successfully run; potential errors:
-            a. ssh is not installed
-            b. ssh is not configured correctly
-            c. ssh attempt was unauthorized
+        RuntimeError: for one of two primary reasons:
+
+            1. The database directory doesn't exist
+            2. The command did not successfully run; potential errors:
+                a. ssh is not installed
+                b. ssh is not configured correctly
+                c. ssh attempt was unauthorized
 
     """
     args = parser.parse_args()
+    if not args.directory.exists():
+        raise RuntimeError("The database directory does not exist")
+
     for user in args.users:
         try:
             retrieve_and_store_quota(args.directory, user=user)
