@@ -3,6 +3,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.2.5] - 2023-03-22
+### Added
+- Added support for configuration file `config.json`.
+
+### Changed
+- Minimum supported Python version is now 3.10.x.
+
+### Fixed
+- Fixed `systemd` timer not starting - needed to add more conditions for starting.
+- Ensured that the database directory exists before executing the commands.
+
 ## [0.2.4] - 2023-03-16
 ### Changed
 - In `main.py`, changed argument parsing from `sys.argv` to `argparse`.
